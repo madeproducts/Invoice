@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Invoice Generator',
+  title: 'Madeproducts Invoice',
   description: 'Created by Abhin',
 }
 
