@@ -48,7 +48,6 @@ function Calculator() {
         color="#FFFFFF"
         anchorX="right"
         anchorY="middle"
-        font="/fonts/Geist-Bold.ttf"
       >
         ₹1,234.56
       </Text>
