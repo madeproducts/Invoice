@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   invoiceNumber: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#bfa46d"",
+    color: "#bfa46d",
     backgroundColor: "#decca9",
     padding: "5 10",
     borderRadius: 3,
