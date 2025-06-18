@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 80,
-    height: 80,
+    height: 90,
   },
   companyInfo: {
     flexDirection: "column",
@@ -73,8 +73,8 @@ const styles = StyleSheet.create({
   invoiceNumber: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#E53E3E",
-    backgroundColor: "#FED7D7",
+    color: "#bfa46d"",
+    backgroundColor: "#decca9",
     padding: "5 10",
     borderRadius: 3,
   },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#E53E3E",
+    color: "#bfa46d",
   },
   footer: {
     position: "absolute",
@@ -321,10 +321,6 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
               <Text style={styles.summaryLabel}>Subtotal</Text>
               <Text style={styles.summaryValue}>{RS(validatedData.subtotal)}</Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Discount ({validatedData.discount}%)</Text>
-              <Text style={styles.summaryValue}>- {RS(validatedData.discountAmount)}</Text>
-            </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total Amount</Text>
               <Text style={styles.totalValue}>{RS(validatedData.total)}</Text>
@@ -337,7 +333,7 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           <Text style={styles.thankYou}>Thank you for your Purchase!</Text>
           <Text style={styles.footerText}>This is a computer-generated invoice and does not require a signature.</Text>
           <Text style={styles.footerText}>
-            For any queries, please contact us at support@ABC.com | +91 75XXX XXXXX
+            For any queries, please contact us at wwww.madeproducts.in | +91 85899 07591
           </Text>
         </View>
       </Page>
