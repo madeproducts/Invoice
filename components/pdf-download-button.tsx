@@ -567,19 +567,9 @@ Please find the invoice PDF in your downloads folder.`
               </>
             )}
 
-            <DropdownMenuItem onClick={shareViaEmail}>
-              <Mail className="h-4 w-4 mr-2" />
-              Send via Email
-            </DropdownMenuItem>
-
             <DropdownMenuItem onClick={shareViaWhatsApp}>
               <MessageCircle className="h-4 w-4 mr-2" />
               Send via WhatsApp
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={sendViaMessenger}>
-              <Send className="h-4 w-4 mr-2" />
-              Send via Messenger
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
