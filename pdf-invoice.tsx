@@ -51,39 +51,11 @@ const styles = StyleSheet.create({
     borderBottom: "2 solid #2D3748",
     paddingBottom: 20,
   },
-  logoSection: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
   logo: {
-    width: 100,
-    height: 60,
-    marginRight: 15,
-    marginBottom: 8,
+    width: 175,
+    height: 90,
   },
   companyInfo: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    maxWidth: 200,
-  },
-  companyInfoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  companyInfoIcon: {
-    fontSize: 10,
-    color: "#4A5568",
-    marginRight: 6,
-    width: 12,
-    textAlign: "center",
-  },
-  companyInfoText: {
-    fontSize: 9,
-    color: "#4A5568",
-    lineHeight: 1.3,
-  },
-  invoiceSection: {
     flexDirection: "column",
     alignItems: "flex-end",
   },
@@ -288,26 +260,10 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
 
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.logoSection}>
+          <View>
             <Image style={styles.logo} src="/images/logo.png" />
-            <View style={styles.companyInfo}>
-              <View style={styles.companyInfoRow}>
-                <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>Chelari, Velimuku. 676317</Text>
-              </View>
-
-              <View style={styles.companyInfoRow}>
-                <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>+91 8589907591</Text>
-              </View>
-
-              <View style={styles.companyInfoRow}>
-                <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>www.madeproducts.in</Text>
-              </View>
-            </View>
           </View>
-          <View style={styles.invoiceSection}>
+          <View style={styles.companyInfo}>
             <Text style={styles.title}>INVOICE</Text>
             <Text style={styles.subtitle}>Invoice no :</Text>
             <Text style={styles.invoiceNumber}>{validatedData.invoiceNumber}</Text>
