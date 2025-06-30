@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   logo: {
-    width: 80,
+    width: 175,
     height: 90,
   },
   companyInfo: {
@@ -73,8 +73,8 @@ const styles = StyleSheet.create({
   invoiceNumber: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#bfa46d",
-    backgroundColor: "#decca9",
+    color: "#000000",
+    backgroundColor: "#a68033",
     padding: "5 10",
     borderRadius: 3,
   },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#bfa46d",
+    color: "#000000",
   },
   footer: {
     position: "absolute",
@@ -256,7 +256,7 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Watermark */}
-        <Image style={styles.watermark} src="/images/logo.png" />
+        <Image style={styles.watermark} src="/images/made_cover.png" />
 
         {/* Header */}
         <View style={styles.header}>
