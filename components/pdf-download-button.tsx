@@ -32,6 +32,8 @@ interface InvoiceData {
   discountAmount: number
   total: number
   invoiceNumber?: string
+  advancePayment?: number
+  balanceDue?: number
 }
 
 export default function PdfDownloadButton({ invoiceData }: { invoiceData: InvoiceData }) {
@@ -54,51 +56,7 @@ export default function PdfDownloadButton({ invoiceData }: { invoiceData: Invoic
     }
   }, [pdfUrl])
 
-  const saveInvoiceToDatabase = async (invoiceDataWithNumber: any) => {
-    try {
-      const response = await fetch("/api/invoices", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          invoice_number: invoiceDataWithNumber.invoiceNumber,
-          customer_name: invoiceDataWithNumber.customerName,
-          invoice_date: invoiceDataWithNumber.date.toISOString().split("T")[0],
-          items: invoiceDataWithNumber.items.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            rate: item.rate,
-            total: item.quantity * item.rate,
-          })),
-          subtotal: invoiceDataWithNumber.subtotal,
-          discount: invoiceDataWithNumber.discount,
-          discount_amount: invoiceDataWithNumber.discountAmount,
-          total: invoiceDataWithNumber.total,
-          status: "draft",
-        }),
-      })
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log("Invoice saved to Supabase successfully:", result)
-        return result
-      } else {
-        const errorData = await response.json()
-        console.error("Failed to save invoice to Supabase:", errorData)
-        throw new Error(errorData.error || "Failed to save invoice")
-      }
-    } catch (error) {
-      console.error("Error saving invoice to Supabase:", error)
-      toast({
-        title: "Database Warning",
-        description: "Invoice PDF generated but may not be saved to database. Please check your connection.",
-        variant: "destructive",
-      })
-      return null
-    }
-  }
 
   const generateInvoiceNumber = () => {
     const now = new Date()
@@ -129,10 +87,7 @@ export default function PdfDownloadButton({ invoiceData }: { invoiceData: Invoic
         invoiceNumber,
       }
 
-      // Try to save invoice to database (non-blocking)
-      const dbResult = await saveInvoiceToDatabase(invoiceDataWithNumber)
-
-      // Create PDF with validated data regardless of database save result
+      // Create PDF with validated data
       const pdfDoc = <InvoicePDF data={invoiceDataWithNumber} />
       const blob = await pdf(pdfDoc).toBlob()
 
@@ -154,18 +109,10 @@ export default function PdfDownloadButton({ invoiceData }: { invoiceData: Invoic
       link.click()
       document.body.removeChild(link)
 
-      // Show appropriate success message
-      if (dbResult) {
-        toast({
-          title: "Invoice Generated & Saved!",
-          description: `Invoice ${invoiceNumber} has been generated, saved to database, and downloaded.`,
-        })
-      } else {
-        toast({
-          title: "Invoice Generated!",
-          description: `Invoice ${invoiceNumber} PDF generated and downloaded. Database save may have failed.`,
-        })
-      }
+      toast({
+        title: "Invoice Generated!",
+        description: `Invoice ${invoiceNumber} PDF generated and downloaded.`,
+      })
     } catch (error) {
       console.error("Error generating PDF:", error)
       toast({
@@ -216,14 +163,6 @@ export default function PdfDownloadButton({ invoiceData }: { invoiceData: Invoic
       // Check if the browser supports the Web Share API with files
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: `Invoice ${invoiceNumber} - ${invoiceData.customerName || "Customer"}`,
-          text: `Invoice ${invoiceNumber} for ${format(invoiceData.date || new Date(), "dd/MM/yyyy")} - Total: ${new Intl.NumberFormat(
-            "en-IN",
-            {
-              style: "currency",
-              currency: "INR",
-            },
-          ).format(invoiceData.total)}`,
           files: [file],
         })
 
@@ -244,7 +183,11 @@ Invoice Details:
 - Total Amount: ${new Intl.NumberFormat("en-IN", {
           style: "currency",
           currency: "INR",
-        }).format(invoiceData.total)}
+        }).format(invoiceData.total)}${
+          invoiceData.advancePayment && invoiceData.advancePayment > 0
+            ? `\n- Advance Paid: ${new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(invoiceData.advancePayment)}\n- Balance Due: ${new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(invoiceData.balanceDue || 0)}`
+            : ""
+        }
 
 Thank you for your business!
 
@@ -292,14 +235,6 @@ MADE PRODUCT`
       // Check if the browser supports the Web Share API with files
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: `Invoice ${invoiceNumber} - ${invoiceData.customerName || "Customer"}`,
-          text: `📄 Invoice PDF\n\nInvoice: ${invoiceNumber}\nCustomer: ${invoiceData.customerName || "Customer"}\nDate: ${format(
-            invoiceData.date || new Date(),
-            "dd/MM/yyyy",
-          )}\nTotal: ${new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-          }).format(invoiceData.total)}`,
           files: [file],
         })
 
@@ -311,19 +246,7 @@ MADE PRODUCT`
         // Fallback: Download PDF and open WhatsApp Web
         downloadPdf()
 
-        const message = `📄 *Invoice PDF*
-
-Invoice: ${invoiceNumber}
-Customer: ${invoiceData.customerName || "Customer"}
-Date: ${format(invoiceData.date || new Date(), "dd/MM/yyyy")}
-Total: ${new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-        }).format(invoiceData.total)}
-
-Please find the invoice PDF in your downloads folder.`
-
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+        const whatsappUrl = `https://wa.me/`
         window.open(whatsappUrl, "_blank")
 
         toast({
@@ -374,14 +297,6 @@ Please find the invoice PDF in your downloads folder.`
       }
 
       await navigator.share({
-        title: `Invoice ${invoiceNumber}`,
-        text: `Invoice ${invoiceNumber} for ${invoiceData.customerName || "Customer"} - ${new Intl.NumberFormat(
-          "en-IN",
-          {
-            style: "currency",
-            currency: "INR",
-          },
-        ).format(invoiceData.total)}`,
         files: [file],
       })
 
@@ -453,7 +368,6 @@ Please find the invoice PDF in your downloads folder.`
       // Try to use Web Share API first
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: `Invoice ${invoiceNumber} - ${invoiceData.customerName || "Customer"}`,
           files: [file],
         })
 

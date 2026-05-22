@@ -2,7 +2,7 @@ import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/render
 import { format } from "date-fns"
 
 // Format RS in Indian Rupees
-  const RS = (amount: number) => {
+const RS = (amount: number) => {
   return 'Rs. ' + amount.toFixed(2); // manually prefix
 }
 // Define types
@@ -22,6 +22,8 @@ interface InvoiceData {
   discountAmount: number
   total: number
   invoiceNumber?: string // Add optional invoice number
+  advancePayment?: number
+  balanceDue?: number
 }
 
 // Create enhanced styles
@@ -264,6 +266,7 @@ const styles = StyleSheet.create({
 
 // Validate and sanitize invoice data
 const validateInvoiceData = (data: InvoiceData) => {
+  const totalVal = typeof data?.total === "number" ? data.total : 0
   return {
     customerName: data?.customerName || "Customer Name",
     date: data?.date || new Date(),
@@ -271,8 +274,10 @@ const validateInvoiceData = (data: InvoiceData) => {
     discount: typeof data?.discount === "number" ? data.discount : 0,
     subtotal: typeof data?.subtotal === "number" ? data.subtotal : 0,
     discountAmount: typeof data?.discountAmount === "number" ? data.discountAmount : 0,
-    total: typeof data?.total === "number" ? data.total : 0,
+    total: totalVal,
     invoiceNumber: data?.invoiceNumber || "INV-0001",
+    advancePayment: typeof data?.advancePayment === "number" ? data.advancePayment : 0,
+    balanceDue: typeof data?.balanceDue === "number" ? data.balanceDue : totalVal,
   }
 }
 
@@ -284,7 +289,7 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Watermark */}
-        <Image style={styles.watermark} src="/images/made_cover.png" />
+        <Image style={styles.watermark} src="/images/coverimage.png" />
 
         {/* Header */}
         <View style={styles.header}>
@@ -293,17 +298,17 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
             <View style={styles.companyInfo}>
               <View style={styles.companyInfoRow}>
                 <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>Chelari, Velimuku. 676317</Text>
+                <Text style={styles.companyInfoText}>Chelari, Kerala. 676317</Text>
               </View>
 
               <View style={styles.companyInfoRow}>
                 <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>+91 8589907591</Text>
+                <Text style={styles.companyInfoText}>+91 7559907591</Text>
               </View>
 
               <View style={styles.companyInfoRow}>
                 <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>www.madeproducts.in</Text>
+                <Text style={styles.companyInfoText}>www.madewebs.in</Text>
               </View>
             </View>
           </View>
@@ -365,10 +370,28 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
               <Text style={styles.summaryLabel}>Subtotal</Text>
               <Text style={styles.summaryValue}>{RS(validatedData.subtotal)}</Text>
             </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total Amount</Text>
-              <Text style={styles.totalValue}>{RS(validatedData.total)}</Text>
+            {validatedData.discountAmount > 0 && (
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Discount ({validatedData.discount}%)</Text>
+                <Text style={styles.summaryValue}>- {RS(validatedData.discountAmount)}</Text>
+              </View>
+            )}
+            <View style={validatedData.advancePayment > 0 ? styles.summaryRow : styles.totalRow}>
+              <Text style={validatedData.advancePayment > 0 ? styles.summaryLabel : styles.totalLabel}>Total Amount</Text>
+              <Text style={validatedData.advancePayment > 0 ? styles.summaryValue : styles.totalValue}>{RS(validatedData.total)}</Text>
             </View>
+            {validatedData.advancePayment > 0 && (
+              <>
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>Advance Paid</Text>
+                  <Text style={styles.summaryValue}>- {RS(validatedData.advancePayment)}</Text>
+                </View>
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Balance Due</Text>
+                  <Text style={styles.totalValue}>{RS(validatedData.balanceDue)}</Text>
+                </View>
+              </>
+            )}
           </View>
         </View>
 
@@ -377,7 +400,7 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           <Text style={styles.thankYou}>Thank you for your Purchase!</Text>
           <Text style={styles.footerText}>This is a computer-generated invoice and does not require a signature.</Text>
           <Text style={styles.footerText}>
-            For any queries, please contact us at wwww.madeproducts.in | +91 85899 07591
+            For any queries, please contact us at www.madewebs.in | +91 7559907591
           </Text>
         </View>
       </Page>

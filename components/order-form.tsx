@@ -32,6 +32,7 @@ export default function OrderForm() {
   const [date, setDate] = useState<Date>(new Date())
   const [items, setItems] = useState<OrderItem[]>([{ id: "1", name: "", quantity: 1, rate: 0 }])
   const [discount, setDiscount] = useState(0)
+  const [advancePayment, setAdvancePayment] = useState(0)
 
   // Add a new item to the list
   const addItem = () => {
@@ -70,6 +71,9 @@ export default function OrderForm() {
   // Calculate total
   const total = subtotal - discountAmount
 
+  // Calculate balance due
+  const balanceDue = total - advancePayment
+
   // Format currency in Indian Rupees
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -88,6 +92,8 @@ export default function OrderForm() {
     subtotal,
     discountAmount,
     total,
+    advancePayment,
+    balanceDue,
   }
 
   return (
@@ -273,6 +279,16 @@ export default function OrderForm() {
                 onChange={(e) => setDiscount(Number.parseFloat(e.target.value) || 0)}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="advance-payment">Advance Payment (₹)</Label>
+              <Input
+                id="advance-payment"
+                type="number"
+                min="0"
+                value={advancePayment}
+                onChange={(e) => setAdvancePayment(Number.parseFloat(e.target.value) || 0)}
+              />
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex-col space-y-4">
@@ -284,10 +300,28 @@ export default function OrderForm() {
             <span>Discount ({discount}%):</span>
             <span>- {formatCurrency(discountAmount)}</span>
           </div>
-          <div className="w-full flex justify-between font-medium text-lg">
+          <div className="w-full flex justify-between text-sm font-medium">
             <span>Total:</span>
             <span>{formatCurrency(total)}</span>
           </div>
+          {advancePayment > 0 && (
+            <>
+              <div className="w-full flex justify-between text-sm text-amber-600">
+                <span>Advance Paid:</span>
+                <span>- {formatCurrency(advancePayment)}</span>
+              </div>
+              <div className="w-full flex justify-between font-bold text-lg text-green-700 border-t pt-2">
+                <span>Balance Due:</span>
+                <span>{formatCurrency(balanceDue)}</span>
+              </div>
+            </>
+          )}
+          {advancePayment <= 0 && (
+            <div className="w-full flex justify-between font-medium text-lg border-t pt-2">
+              <span>Total Amount:</span>
+              <span>{formatCurrency(total)}</span>
+            </div>
+          )}
 
           <PdfDownloadButton invoiceData={invoiceData} />
         </CardFooter>
