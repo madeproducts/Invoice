@@ -303,12 +303,12 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
 
               <View style={styles.companyInfoRow}>
                 <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>+91 7559907591</Text>
+                <Text style={styles.companyInfoText}>+91 8589907591</Text>
               </View>
 
               <View style={styles.companyInfoRow}>
                 <Text style={styles.companyInfoIcon}></Text>
-                <Text style={styles.companyInfoText}>www.madewebs.in</Text>
+                <Text style={styles.companyInfoText}>www.madeproducts.in</Text>
               </View>
             </View>
           </View>
@@ -400,7 +400,7 @@ export const InvoicePDF = ({ data }: { data: InvoiceData }) => {
           <Text style={styles.thankYou}>Thank you for your Purchase!</Text>
           <Text style={styles.footerText}>This is a computer-generated invoice and does not require a signature.</Text>
           <Text style={styles.footerText}>
-            For any queries, please contact us at www.madewebs.in | +91 7559907591
+            For any queries, please contact us at www.madeproducts.in | +91 8589907591
           </Text>
         </View>
       </Page>
